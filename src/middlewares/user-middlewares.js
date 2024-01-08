@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const { ErrorResponse } = require("../utils/common");
 const AppError = require("../utils/errors/app-error");
 
-function validateSignUpRequest(req, res, next) {
+function validateAuthRequest(req, res, next) {
   ErrorResponse.message = "Something went wrong while creating user";
   if (!req.body.email) {
     ErrorResponse.error = new AppError(
@@ -21,5 +21,5 @@ function validateSignUpRequest(req, res, next) {
 }
 
 module.exports = {
-  validateSignUpRequest,
+  validateAuthRequest,
 };

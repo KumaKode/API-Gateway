@@ -32,6 +32,9 @@ async function signUp(data) {
 async function signIn(data) {
   try {
     const user = await userRepository.getUserByEmail(data.email);
+    if (!user) {
+      throw new AppError("Not able to find the user", StatusCodes.NOT_FOUND);
+    }
     const password = Auth.matchPassword(data.password, user.password);
     if (!password) {
       throw new AppError("Invalid password", StatusCodes.BAD_REQUEST);

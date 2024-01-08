@@ -7,10 +7,14 @@ const { UserMiddlewares } = require("../../middlewares");
 
 router.post(
   "/signup",
-  UserMiddlewares.validateSignUpRequest,
+  UserMiddlewares.validateAuthRequest,
   UserController.signUp
 );
 
-router.post("/signin", UserController.signIn);
+router.post(
+  "/signin",
+  UserMiddlewares.validateAuthRequest,
+  UserController.signIn
+);
 
 module.exports = router;

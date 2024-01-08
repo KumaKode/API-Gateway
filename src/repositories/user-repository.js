@@ -10,12 +10,7 @@ class UserRepository extends CrudRepository {
 
   async getUserByEmail(email) {
     const response = await User.findOne({ where: { email: email } });
-    if (!response) {
-      throw new AppError(
-        "Not able to find the resource",
-        StatusCodes.NOT_FOUND
-      );
-    }
+
     return response;
   }
 }
