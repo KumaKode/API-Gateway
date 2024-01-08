@@ -6,9 +6,11 @@ const { UserController } = require("../../controllers");
 const { UserMiddlewares } = require("../../middlewares");
 
 router.post(
-  "/",
-  UserMiddlewares.validateCreateUserRequest,
+  "/signup",
+  UserMiddlewares.validateSignUpRequest,
   UserController.signUp
 );
+
+router.post("/signin", UserController.signIn);
 
 module.exports = router;
