@@ -1,6 +1,4 @@
-const { StatusCodes } = require("http-status-codes");
 const CrudRepository = require("./crud-repository");
-const AppError = require("../utils/errors/app-error");
 const { User } = require("../models");
 
 class UserRepository extends CrudRepository {

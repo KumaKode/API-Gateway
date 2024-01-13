@@ -1,16 +1,20 @@
 const { StatusCodes } = require("http-status-codes");
 
-const { UserRepository } = require("../repositories");
+const { UserRepository, RoleRepository } = require("../repositories");
 const AppError = require("../utils/errors/app-error");
 const { Auth } = require("../utils/common");
 
 const userRepository = new UserRepository();
+const roleRepository = new RoleRepository();
 
 async function signUp(data) {
   try {
     const user = await userRepository.create(data);
+    const role = await roleRepository.getRoleByName("customer");
+    user.addRole(role);
     return user;
   } catch (error) {
+    console.log(error);
     if (
       error.name === "SequelizeValidationError" ||
       error.name === "SequelizeUniqueConstraintError"
@@ -57,7 +61,7 @@ async function isAuthenticated(token) {
       throw new AppError("No JWT token found", StatusCodes.BAD_REQUEST);
     }
     const response = Auth.verifyToken(token);
-    const user = userRepository.get(response.id);
+    const user = await userRepository.get(response.id);
     if (!user) {
       throw new AppError("No user found", StatusCodes.BAD_REQUEST);
     }
@@ -78,8 +82,72 @@ async function isAuthenticated(token) {
   }
 }
 
+async function addRoleToUser(data) {
+  try {
+    const user = await userRepository.get(data.id);
+
+    if (!user) {
+      throw new AppError(
+        "No user found for the given id",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    const role = await roleRepository.getRoleByName(data.name);
+
+    if (!role) {
+      throw new AppError(
+        "No user found for the given role",
+        StatusCodes.NOT_FOUND
+      );
+    }
+    user.addRole(role);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      "Something went wrong",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function isAdmin(id) {
+  try {
+    const user = await userRepository.get(id);
+
+    if (!user) {
+      throw new AppError(
+        "No user found for the given id",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    const admin = user.hasRole("admin");
+    console.log(admin);
+
+    if (!admin) {
+      throw new AppError(
+        "No user found for the given role",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    return admin;
+  } catch (error) {
+    console.log(error);
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      "Something went wrong",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
 module.exports = {
   signUp,
   signIn,
   isAuthenticated,
+  addRoleToUser,
+  isAdmin,
 };
