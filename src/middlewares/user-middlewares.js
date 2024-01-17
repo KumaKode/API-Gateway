@@ -4,14 +4,15 @@ const AppError = require("../utils/errors/app-error");
 const { UserService } = require("../services");
 
 function validateAuthRequest(req, res, next) {
-  ErrorResponse.message = "Something went wrong while creating user";
   if (!req.body.email) {
+    ErrorResponse.message = "Something went wrong while creating the user";
     ErrorResponse.error = new AppError(
       ["email not found in the incoming request"],
       StatusCodes.BAD_REQUEST
     );
   }
   if (!req.body.password) {
+    ErrorResponse.message = "Something went wrong while creating the ser";
     ErrorResponse.error = new AppError(
       ["password not found in the incoming request"],
       StatusCodes.BAD_REQUEST
@@ -37,19 +38,44 @@ async function chekAuth(req, res, next) {
 }
 
 async function isAdmin(req, res, next) {
-  const response = await UserService.isAdmin(req.user);
+  try {
+    const response = await UserService.isAdmin(req.user);
 
-  if (!response) {
-    return res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: "Use is not authorized for this action." });
+    if (!response) {
+      ErrorResponse.error = new AppError(
+        ["User is not authorized for this action"],
+        StatusCodes.UNAUTHORIZED
+      );
+      return res.status(StatusCodes.UNAUTHORIZED).json(ErrorResponse);
+    }
+
+    next();
+  } catch (error) {
+    console.log(error);
   }
+}
 
-  next();
+async function isFlightCompany(req, res, next) {
+  const response = await UserService.isFlightCompany(req.user);
+
+  try {
+    if (!response[0] && !response[1]) {
+      ErrorResponse.error = new AppError(
+        ["User is not authorized for this action"],
+        StatusCodes.UNAUTHORIZED
+      );
+      return res.status(StatusCodes.UNAUTHORIZED).json(ErrorResponse);
+    }
+
+    next();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 module.exports = {
   validateAuthRequest,
   chekAuth,
   isAdmin,
+  isFlightCompany,
 };

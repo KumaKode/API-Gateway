@@ -113,6 +113,7 @@ async function addRoleToUser(data) {
 }
 
 async function isAdmin(id) {
+  console.log(id);
   try {
     const user = await userRepository.get(id);
 
@@ -123,8 +124,7 @@ async function isAdmin(id) {
       );
     }
 
-    const admin = user.hasRole("admin");
-    console.log(admin);
+    const admin = await roleRepository.getRoleByName("admin");
 
     if (!admin) {
       throw new AppError(
@@ -133,7 +133,41 @@ async function isAdmin(id) {
       );
     }
 
-    return admin;
+    return user.hasRole(admin);
+  } catch (error) {
+    console.log(error);
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      "Something went wrong",
+      StatusCodes.INTERNAL_SERVER_ERROR
+    );
+  }
+}
+
+async function isFlightCompany(id) {
+  try {
+    const user = await userRepository.get(id);
+
+    if (!user) {
+      throw new AppError(
+        "No user found for the given id",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    const flight_company = await roleRepository.getRoleByName("flight_company");
+
+    if (!flight_company) {
+      throw new AppError(
+        "No user found for the given roles",
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    const admin = await isAdmin(id);
+    const company = await user.hasRole(flight_company);
+
+    return [admin, company];
   } catch (error) {
     console.log(error);
     if (error instanceof AppError) throw error;
@@ -150,4 +184,5 @@ module.exports = {
   isAuthenticated,
   addRoleToUser,
   isAdmin,
+  isFlightCompany,
 };
