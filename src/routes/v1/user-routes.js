@@ -17,6 +17,8 @@ router.post(
   UserController.signIn
 );
 
+router.get("/:id", UserController.getUser);
+
 router.post(
   "/role",
   UserMiddlewares.chekAuth,

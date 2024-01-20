@@ -55,7 +55,19 @@ app.use(
     pathRewrite: {
       "^/bookingService": "/", // rewrite path
     },
-    onProxyReq: fixRequestBody,
+    onProxyReq: function (proxyReq, req, res) {
+      //The target host gets a fresh req object (assuming
+      //it is implemented in Node.js at all), therefore it
+      //cannot see thegateway's req object.
+
+      let bodyData = JSON.stringify(req.body);
+      // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+      proxyReq.setHeader("Content-Type", "application/json");
+      proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+      proxyReq.setHeader("user-id", req.user);
+      // stream the content
+      proxyReq.write(bodyData);
+    },
   })
 );
 

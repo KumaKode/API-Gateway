@@ -55,6 +55,18 @@ async function signIn(data) {
   }
 }
 
+async function getUser(id) {
+  try {
+    const user = await userRepository.get(id);
+    return user;
+  } catch (error) {
+    console.log(error);
+    if ((error.StatusCode = StatusCodes.NOT_FOUND)) {
+      throw new AppError("The requested user not found", error.StatusCode);
+    }
+  }
+}
+
 async function isAuthenticated(token) {
   try {
     if (!token) {
@@ -181,6 +193,7 @@ async function isFlightCompany(id) {
 module.exports = {
   signUp,
   signIn,
+  getUser,
   isAuthenticated,
   addRoleToUser,
   isAdmin,
