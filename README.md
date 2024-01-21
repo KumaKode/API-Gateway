@@ -2,6 +2,8 @@
 
 Welcome to the API Gateway and User Service repository! This project serves as the central entry point for managing and routing requests to microservices in the Airline Management System. Manages user-related functionalities, including authentication, authorization, and user profiles.
 
+## Getting Started
+
 `src` -> Inside the src folder all the actual source code regarding the project will reside, this will not include any kind of tests. (You might want to make separate tests folder)
 
 Lets take a look inside the `src` folder
