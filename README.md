@@ -45,7 +45,7 @@ npm install
 - Setup tables by seeing the `models` folder and run the following command:
 
 ```
-    npx sequelize model:generate --name tableName --attributes attributeName:attributeType,attributeName:attributeType
+npx sequelize model:generate --name tableName --attributes attributeName:attributeType,attributeName:attributeType
 ```
 
 - If you're setting up your development environment, then write the username of your db, password of your db and in dialect mention whatever db you are using for ex: mysql, mariadb etc
